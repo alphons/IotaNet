@@ -56,10 +56,10 @@ namespace IotaNet.Iri.Utils
 			return value;
 		}
 
-		public static byte[] bytes( int[] trits,  int offset,  int size)
+		public static byte[] bytes(int[] trits, int offset, int size)
 		{
 
-			 byte[] bytes = new byte[(size + NUMBER_OF_TRITS_IN_A_BYTE - 1) / NUMBER_OF_TRITS_IN_A_BYTE];
+			byte[] bytes = new byte[(size + NUMBER_OF_TRITS_IN_A_BYTE - 1) / NUMBER_OF_TRITS_IN_A_BYTE];
 			for (int i = 0; i < bytes.Length; i++)
 			{
 
@@ -74,19 +74,18 @@ namespace IotaNet.Iri.Utils
 			return bytes;
 		}
 
-		public static byte[] bytes( int[] trits)
+		public static byte[] bytes(int[] trits)
 		{
 			return bytes(trits, 0, trits.Length);
 		}
 
-		public static void getTrits( byte[] bytes,  int[] trits)
+		public static void getTrits(byte[] bytes, int[] trits)
 		{
 
 			int offset = 0;
 			for (int i = 0; i < bytes.Length && offset < trits.Length; i++)
 			{
-				// WTF TODO
-				//System.arraycopy(BYTE_TO_TRITS_MAPPINGS[bytes[i] < 0 ? (bytes[i] + BYTE_TO_TRITS_MAPPINGS.Length) : bytes[i]], 0, trits, offset, trits.Length - offset < NUMBER_OF_TRITS_IN_A_BYTE ? (trits.Length - offset) : NUMBER_OF_TRITS_IN_A_BYTE);
+				Array.Copy(BYTE_TO_TRITS_MAPPINGS[bytes[i] < 0 ? (bytes[i] + BYTE_TO_TRITS_MAPPINGS.Length) : bytes[i]], 0, trits, offset, trits.Length - offset < NUMBER_OF_TRITS_IN_A_BYTE ? (trits.Length - offset) : NUMBER_OF_TRITS_IN_A_BYTE);
 				offset += NUMBER_OF_TRITS_IN_A_BYTE;
 			}
 			while (offset < trits.Length)
@@ -95,18 +94,17 @@ namespace IotaNet.Iri.Utils
 			}
 		}
 
-		public static int[] trits( String trytes)
+		public static int[] trits(String trytes)
 		{
-			 int[] trits = new int[trytes.Length * NUMBER_OF_TRITS_IN_A_TRYTE];
+			int[] trits = new int[trytes.Length * NUMBER_OF_TRITS_IN_A_TRYTE];
 			for (int i = 0; i < trytes.Length; i++)
 			{
-				// WTF TODO
-				//System.arraycopy(TRYTE_TO_TRITS_MAPPINGS[TRYTE_ALPHABET.IndexOf(trytes[i])], 0, trits, i * NUMBER_OF_TRITS_IN_A_TRYTE, NUMBER_OF_TRITS_IN_A_TRYTE);
+				Array.Copy(TRYTE_TO_TRITS_MAPPINGS[TRYTE_ALPHABET.IndexOf(trytes[i])], 0, trits, i * NUMBER_OF_TRITS_IN_A_TRYTE, NUMBER_OF_TRITS_IN_A_TRYTE);
 			}
 			return trits;
 		}
 
-		public static void copyTrits( long value,  int[] destination,  int offset,  int size)
+		public static void copyTrits(long value, int[] destination, int offset, int size)
 		{
 
 			long absoluteValue = value < 0 ? -value : value;
@@ -134,7 +132,7 @@ namespace IotaNet.Iri.Utils
 		}
 
 
-		public static String trytes( int[] trits,  int offset,  int size)
+		public static String trytes(int[] trits, int offset, int size)
 		{
 
 			var trytes = new StringBuilder();
@@ -150,12 +148,12 @@ namespace IotaNet.Iri.Utils
 			return trytes.ToString();
 		}
 
-		public static String trytes( int[] trits)
+		public static String trytes(int[] trits)
 		{
 			return trytes(trits, 0, trits.Length);
 		}
 
-		public static int tryteValue( int[] trits,  int offset)
+		public static int tryteValue(int[] trits, int offset)
 		{
 			return trits[offset] + trits[offset + 1] * 3 + trits[offset + 2] * 9;
 		}
@@ -201,7 +199,7 @@ namespace IotaNet.Iri.Utils
 			}
 		}
 
-		public static int[] trits(Tuple<long[], long[]> pair,  int bitIndex)
+		public static int[] trits(Tuple<long[], long[]> pair, int bitIndex)
 		{
 			int length;
 			if (pair.Item1.Length == pair.Item2.Length || pair.Item1.Length < pair.Item2.Length)
@@ -256,7 +254,7 @@ namespace IotaNet.Iri.Utils
 			return trits;
 		}
 
-		private static void increment( int[] trits,  int size)
+		private static void increment(int[] trits, int size)
 		{
 			for (int i = 0; i < size; i++)
 			{
