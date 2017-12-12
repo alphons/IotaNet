@@ -15,14 +15,14 @@ namespace IotaNet.Iri.Hash
 	 */
 	public class Curl : ISponge
 	{
-		public static  int HASH_LENGTH = 243;
-		public static  int NUMBER_OF_ROUNDSP81 = 81;
-		public static  int NUMBER_OF_ROUNDSP27 = 27;
-		private  int numberOfRounds;
-		private static  int STATE_LENGTH = 3 * HASH_LENGTH;
-		private static  int HALF_LENGTH = 364;
+		public static int HASH_LENGTH = 243;
+		public static int NUMBER_OF_ROUNDSP81 = 81;
+		public static int NUMBER_OF_ROUNDSP27 = 27;
+		private int numberOfRounds;
+		private static int STATE_LENGTH = 3 * HASH_LENGTH;
+		private static int HALF_LENGTH = 364;
 
-		private static  int[] TRUTH_TABLE = { 1, 0, -1, 2, 1, -1, 0, 2, -1, 1, 0 };
+		private static int[] TRUTH_TABLE = { 1, 0, -1, 2, 1, -1, 0, 2, -1, 1, 0 };
 		/*
 		private static final IntPair[] TRANSFORM_INDICES = IntStream.range(0, STATE_LENGTH)
 				.mapToObj(i -> new IntPair(i == 0 ? 0 : (((i - 1) % 2) + 1) * HALF_LENGTH - ((i - 1) >> 1),
@@ -30,11 +30,11 @@ namespace IotaNet.Iri.Hash
 				.toArray(IntPair[]::new);
 				*/
 
-		private  int[] state;
-		private  long[] stateLow;
-		private  long[] stateHigh;
+		private int[] state;
+		private long[] stateLow;
+		private long[] stateHigh;
 
-		private  int[] scratchpad = new int[STATE_LENGTH];
+		private int[] scratchpad = new int[STATE_LENGTH];
 
 
 		public Curl(SpongeFactory.Mode mode)
@@ -94,7 +94,7 @@ namespace IotaNet.Iri.Hash
 
 		}
 
-		public void absorb( int[] trits, int offset, int length)
+		public void absorb(int[] trits, int offset, int length)
 		{
 
 			do
@@ -106,7 +106,7 @@ namespace IotaNet.Iri.Hash
 		}
 
 
-		public void squeeze( int[] trits, int offset, int length)
+		public void squeeze(int[] trits, int offset, int length)
 		{
 
 			do
@@ -165,8 +165,8 @@ namespace IotaNet.Iri.Hash
 
 		private void pairTransform()
 		{
-			 long[] curlScratchpadLow = new long[STATE_LENGTH];
-			 long[] curlScratchpadHigh = new long[STATE_LENGTH];
+			long[] curlScratchpadLow = new long[STATE_LENGTH];
+			long[] curlScratchpadHigh = new long[STATE_LENGTH];
 			int curlScratchpadIndex = 0;
 			for (int round = numberOfRounds; round-- > 0;)
 			{
@@ -174,17 +174,17 @@ namespace IotaNet.Iri.Hash
 				Array.Copy(stateHigh, 0, curlScratchpadHigh, 0, STATE_LENGTH);
 				for (int curlStateIndex = 0; curlStateIndex < STATE_LENGTH; curlStateIndex++)
 				{
-					 long alpha = curlScratchpadLow[curlScratchpadIndex];
-					 long beta = curlScratchpadHigh[curlScratchpadIndex];
-					 long gamma = curlScratchpadHigh[curlScratchpadIndex += (curlScratchpadIndex < 365 ? 364 : -365)];
-					 long delta = (alpha | (~gamma)) & (curlScratchpadLow[curlScratchpadIndex] ^ beta);
+					long alpha = curlScratchpadLow[curlScratchpadIndex];
+					long beta = curlScratchpadHigh[curlScratchpadIndex];
+					long gamma = curlScratchpadHigh[curlScratchpadIndex += (curlScratchpadIndex < 365 ? 364 : -365)];
+					long delta = (alpha | (~gamma)) & (curlScratchpadLow[curlScratchpadIndex] ^ beta);
 					stateLow[curlStateIndex] = ~delta;
 					stateHigh[curlStateIndex] = (alpha ^ gamma) | delta;
 				}
 			}
 		}
 
-		public void absorb( Tuple<long[], long[]> pair, int offset, int length)
+		public void absorb(Tuple<long[], long[]> pair, int offset, int length)
 		{
 			int o = offset, l = length, i = 0;
 			do

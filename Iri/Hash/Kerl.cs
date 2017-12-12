@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Org.BouncyCastle.Crypto.Digests;
-
+using IotaNet.Iri.Helpers;
 
 namespace IotaNet.Iri.Hash
 {
@@ -41,7 +41,6 @@ namespace IotaNet.Iri.Hash
 
 			do
 			{
-
 				//copy trits[offset:offset+length]
 				Array.Copy(trits, offset, trit_state, 0, HASH_LENGTH);
 
@@ -59,7 +58,6 @@ namespace IotaNet.Iri.Hash
 
 		public void squeeze(int[] trits, int offset, int length)
 		{
-
 			if (length % 243 != 0) throw new Exception("Illegal length: " + length);
 
 			do
@@ -92,8 +90,7 @@ namespace IotaNet.Iri.Hash
 
 			for (int i = size; i-- > 0;)
 			{
-
-				value = value.multiply(BigInteger.valueOf(Utils.Converter.RADIX)).add(BigInteger.valueOf(trits[offset + i]));
+				value = value * (new BigInteger(Utils.Converter.RADIX)) + new BigInteger(trits[offset + i]);
 			}
 
 			return value;
@@ -113,13 +110,12 @@ namespace IotaNet.Iri.Hash
 			for (int i = 0; i < size; i++)
 			{
 
-				BigInteger[] divRemainder = absoluteValue.divideAndRemainder(BigInteger.valueOf(Utils.Converter.RADIX));
+				BigInteger[] divRemainder = absoluteValue.divideAndRemainder(new BigInteger(Utils.Converter.RADIX));
 				int remainder = divRemainder[1].intValue();
 				absoluteValue = divRemainder[0];
 
 				if (remainder > Utils.Converter.MAX_TRIT_VALUE)
 				{
-
 					remainder = Utils.Converter.MIN_TRIT_VALUE;
 					absoluteValue = absoluteValue + BigInteger.One;
 				}
@@ -128,16 +124,15 @@ namespace IotaNet.Iri.Hash
 
 			if (value.CompareTo(BigInteger.Zero) < 0)
 			{
-
 				for (int i = 0; i < size; i++)
 				{
-
 					destination[i] = -destination[i];
 				}
 			}
 
 			return destination;
 		}
+
 		public static byte[] bytesFromBigInt(BigInteger value, int size)
 		{
 
