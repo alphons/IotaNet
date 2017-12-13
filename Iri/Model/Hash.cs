@@ -3,6 +3,7 @@
 using IotaNet.Iri.Hash;
 using IotaNet.Iri.Helpers;
 using IotaNet.Iri.Utils;
+using IotaNet.Iri.Storage;
 
 namespace IotaNet.Iri.Model
 {
@@ -13,7 +14,7 @@ namespace IotaNet.Iri.Model
 
 		public static Hash NULL_HASH = new Hash(new int[Curl.HASH_LENGTH]);
 
-		private byte[] bytes;
+		private byte[] _bytes;
 		private int[] trits;
 		private int hashCode;
 
@@ -90,7 +91,7 @@ namespace IotaNet.Iri.Model
 			if (trits == null)
 			{
 				trits = new int[Curl.HASH_LENGTH];
-				Converter.getTrits(bytes, trits);
+				Converter.getTrits(this._bytes, trits);
 			}
 			return trits;
 		}
@@ -99,14 +100,14 @@ namespace IotaNet.Iri.Model
 		{
 			//assert obj instanceof Hash;
 			if (obj == null) return false;
-			return Arrays.equals(Bytes(), ((Hash)obj).Bytes());
+			return Arrays.equals(bytes(), ((Hash)obj).bytes());
 		}
 
 		public override int GetHashCode()
 		{
-			if (this.bytes == null)
+			if (this._bytes == null)
 			{
-				Bytes();
+				bytes();
 			}
 			return hashCode;
 		}
@@ -116,21 +117,21 @@ namespace IotaNet.Iri.Model
 			return Converter.trytes(Trits());
 		}
 
-		public byte[] Bytes()
+		public byte[] bytes()
 		{
-			if (this.bytes == null)
+			if (this._bytes == null)
 			{
-				this.bytes = Converter.bytes(trits);
-				hashCode = Arrays.hashCode(this.bytes);
+				this._bytes = Converter.bytes(trits);
+				hashCode = Arrays.hashCode(this._bytes);
 			}
-			return this.bytes;
+			return this._bytes;
 		}
 
 		private void fullRead(byte[] bytes, int offset, int size)
 		{
-			this.bytes = new byte[SIZE_IN_BYTES];
-			Array.Copy(bytes, offset, this.bytes, 0, size - offset > bytes.Length ? bytes.Length - offset : size);
-			hashCode = Arrays.hashCode(this.bytes);
+			this._bytes = new byte[SIZE_IN_BYTES];
+			Array.Copy(bytes, offset, this._bytes, 0, size - offset > bytes.Length ? bytes.Length - offset : size);
+			hashCode = Arrays.hashCode(this._bytes);
 
 		}
 

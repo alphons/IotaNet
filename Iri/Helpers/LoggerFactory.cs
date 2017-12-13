@@ -27,5 +27,9 @@ namespace IotaNet.Iri.Helpers
 		{
 
 		}
+		public void error(string format, params object[] list)
+		{
+
+		}
 	}
 }

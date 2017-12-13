@@ -1,11 +1,8 @@
-﻿using IotaNet.Iri.Helpers;
-using IotaNet.Iri.Storage;
-using IotaNet.Iri.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using IotaNet.Iri.Helpers;
+using IotaNet.Iri.Utils;
 
 namespace IotaNet.Iri.Storage
 {
@@ -16,11 +13,11 @@ namespace IotaNet.Iri.Storage
 	{
 		private static Logger log = LoggerFactory.getLogger<Tangle>();
 
-		private List<PersistenceProvider> persistenceProviders = new ArrayList<>();
+		private List<PersistenceProvider> persistenceProviders = new List<PersistenceProvider>();
 
 		public void addPersistenceProvider(PersistenceProvider provider)
 		{
-			this.persistenceProviders.add(provider);
+			this.persistenceProviders.Add(provider);
 		}
 
 		public void init()
@@ -36,215 +33,241 @@ namespace IotaNet.Iri.Storage
 		{
 			log.info("Shutting down Tangle Persistence Providers... ");
 
-			this.persistenceProviders.forEach(PersistenceProvider::shutdown);
-			this.persistenceProviders.clear();
+			this.persistenceProviders.ForEach(x => x.shutdown());
+			this.persistenceProviders.Clear();
 		}
 
-		public Persistable load(Class<?> model, Indexable index) throws Exception
+		public Persistable load<T>(T model, Indexable index)
 		{
-			Persistable out = null;
-            foreach(PersistenceProvider provider in this.persistenceProviders) {
-		if ((out = provider.get(model, index)) != null) {
-			break;
-		}
+			Persistable Out = null;
+			foreach (PersistenceProvider provider in this.persistenceProviders)
+			{
+				if ((Out = provider.get(model, index)) != null)
+				{
+					break;
+				}
 			}
-            return out;
+			return Out;
 		}
 
-public Boolean saveBatch(List<Pair<Indexable, Persistable>> models)
-{
-	bool exists = false;
-	foreach (PersistenceProvider provider in persistenceProviders) {
-		if (exists)
+		public Boolean saveBatch(List<Pair<Indexable, Persistable>> models)
 		{
-			provider.saveBatch(models);
+			bool exists = false;
+			foreach (PersistenceProvider provider in persistenceProviders)
+			{
+				if (exists)
+				{
+					provider.saveBatch(models);
+				}
+				else
+				{
+					exists = provider.saveBatch(models);
+				}
+			}
+			return exists;
 		}
-		else
+		public Boolean save(Persistable model, Indexable index)
 		{
-			exists = provider.saveBatch(models);
+			bool exists = false;
+			foreach (PersistenceProvider provider in persistenceProviders)
+			{
+				if (exists)
+				{
+					provider.save(model, index);
+				}
+				else
+				{
+					exists = provider.save(model, index);
+				}
+			}
+			return exists;
 		}
-	}
-	return exists;
-}
-public Boolean save(Persistable model, Indexable index) 
-{
-	bool exists = false;
-            foreach(PersistenceProvider provider in persistenceProviders) {
-		if (exists)
+
+		public void delete<T>(T model, Indexable index)
 		{
-			provider.save(model, index);
+			foreach (PersistenceProvider provider in persistenceProviders)
+			{
+				provider.delete(model, index);
+			}
 		}
-		else
+
+		public Pair<Indexable, Persistable> getLatest<T, U>(T model, U index)
 		{
-			exists = provider.save(model, index);
+			Pair<Indexable, Persistable> latest = null;
+			foreach (PersistenceProvider provider in persistenceProviders)
+			{
+				if (latest == null)
+				{
+					latest = provider.latest(model, index);
+				}
+			}
+			return latest;
 		}
-	}
-            return exists;
-}
 
-public void delete(Class<?> model, Indexable index)
-{
-            foreach(PersistenceProvider provider in persistenceProviders) {
-		provider.delete(model, index);
-	}
-}
-
-public Pair<Indexable, Persistable> getLatest(Class<?> model, Class<?> index) throws Exception
-{
-	Pair<Indexable, Persistable> latest = null;
-            for(PersistenceProvider provider: persistenceProviders) {
-		if (latest == null)
+		public Boolean update(Persistable model, Indexable index, String item)
 		{
-			latest = provider.latest(model, index);
+			bool success = false;
+			foreach (PersistenceProvider provider in this.persistenceProviders)
+			{
+				if (success)
+				{
+					provider.update(model, index, item);
+				}
+				else
+				{
+					success = provider.update(model, index, item);
+				}
+			}
+			return success;
 		}
-	}
-            return latest;
-}
 
-public Boolean update(Persistable model, Indexable index, String item)
-{
-	bool success = false;
-            foreach(PersistenceProvider provider in this.persistenceProviders) {
-		if (success)
+		public HashSet<Indexable> keysWithMissingReferences<T, U>(T modelClass, U referencedClass)
 		{
-			provider.update(model, index, item);
+			HashSet<Indexable> output = null;
+			foreach (PersistenceProvider provider in this.persistenceProviders)
+			{
+				output = provider.keysWithMissingReferences(modelClass, referencedClass);
+				if (output != null && output.Count > 0)
+				{
+					break;
+				}
+			}
+			return output;
 		}
-		else
+
+		public HashSet<Indexable> keysStartingWith<T>(T modelClass, byte[] value)
 		{
-			success = provider.update(model, index, item);
+			HashSet<Indexable> output = null;
+			foreach (PersistenceProvider provider in this.persistenceProviders)
+			{
+				output = provider.keysStartingWith(modelClass, value);
+				if (output.Count != 0)
+				{
+					break;
+				}
+			}
+			return output;
 		}
-	}
-            return success;
-}
 
-public Set<Indexable> keysWithMissingReferences(Class<?> modelClass, Class<?> referencedClass) 
-{
-	Set<Indexable> output = null;
-            foreach(PersistenceProvider provider in this.persistenceProviders) {
-		output = provider.keysWithMissingReferences(modelClass, referencedClass);
-		if (output != null && output.size() > 0)
+		public Boolean exists<T>(T modelClass, Indexable hash)
 		{
-			break;
+			foreach (PersistenceProvider provider in this.persistenceProviders)
+			{
+				if (provider.exists(modelClass, hash))
+					return true;
+			}
+			return false;
 		}
-	}
-            return output;
-}
 
-public Set<Indexable> keysStartingWith(Class<?> modelClass, byte[] value)
-{
-	Set<Indexable> output = null;
-	foreach (PersistenceProvider provider in this.persistenceProviders)
-	{
-		output = provider.keysStartingWith(modelClass, value);
-		if (output.size() != 0)
+		public Boolean maybeHas<T>(T model, Indexable index)
 		{
-			break;
+			foreach (PersistenceProvider provider in this.persistenceProviders)
+			{
+				if (provider.mayExist(model, index)) return true;
+			}
+			return false;
 		}
-	}
-	return output;
-}
 
-public Boolean exists(Class<?> modelClass, Indexable hash) 
-{
-            foreach(PersistenceProvider provider in this.persistenceProviders) {
-		if (provider.exists(modelClass, hash)) return true;
-	}
-            return false;
-}
-
-public Boolean maybeHas(Class<?> model, Indexable index) 
-{
-            foreach(PersistenceProvider provider in this.persistenceProviders) {
-		if (provider.mayExist(model, index)) return true;
-	}
-            return false;
-}
-
-public Long getCount(Class<?> modelClass) 
-{
-            long value = 0;
-            foreach(PersistenceProvider provider in this.persistenceProviders) {
-		if ((value = provider.count(modelClass)) != 0)
+		public long getCount<T>(T modelClass)
 		{
-			break;
+			long value = 0;
+			foreach (PersistenceProvider provider in this.persistenceProviders)
+			{
+				if ((value = provider.count(modelClass)) != 0)
+				{
+					break;
+				}
+			}
+			return value;
 		}
-	}
-            return value;
-}
 
-public Persistable find(Class<?> model, byte[] key) 
-{
-	Persistable out = null;
-            foreach (PersistenceProvider provider in this.persistenceProviders) {
-		if ((out = provider.seek(model, key)) != null) {
-			break;
-		}
-	}
-            return out;
-}
-
-public Pair<Indexable, Persistable> next(Class<?> model, Indexable index) 
-{
-	Pair<Indexable, Persistable> latest = null;
-            foreach(PersistenceProvider provider in persistenceProviders) {
-		if (latest == null)
+		public Persistable find<T>(T model, byte[] key)
 		{
-			latest = provider.next(model, index);
+			Persistable Out = null;
+			foreach (PersistenceProvider provider in this.persistenceProviders)
+			{
+				if ((Out = provider.seek(model, key)) != null)
+				{
+					break;
+				}
+			}
+			return Out;
 		}
-	}
-            return latest;
-}
 
-public Pair<Indexable, Persistable> previous(Class<?> model, Indexable index) 
-{
-	Pair<Indexable, Persistable> latest = null;
-            foreach(PersistenceProvider provider in persistenceProviders) {
-		if (latest == null)
+		public Pair<Indexable, Persistable> next<T>(T model, Indexable index)
 		{
-			latest = provider.previous(model, index);
+			Pair<Indexable, Persistable> latest = null;
+			foreach (PersistenceProvider provider in persistenceProviders)
+			{
+				if (latest == null)
+				{
+					latest = provider.next(model, index);
+				}
+			}
+			return latest;
 		}
-	}
-            return latest;
-}
 
-public Pair<Indexable, Persistable> getFirst(Class<?> model, Class<?> index) 
-{
-	Pair<Indexable, Persistable> latest = null;
-            foreach(PersistenceProvider provider in persistenceProviders) {
-		if (latest == null)
+		public Pair<Indexable, Persistable> previous<T>(T model, Indexable index)
 		{
-			latest = provider.first(model, index);
+			Pair<Indexable, Persistable> latest = null;
+			foreach (PersistenceProvider provider in persistenceProviders)
+			{
+				if (latest == null)
+				{
+					latest = provider.previous(model, index);
+				}
+			}
+			return latest;
 		}
-	}
-            return latest;
-}
 
-public void clearColumn(Class<?> column) 
-{
-        foreach(PersistenceProvider provider in persistenceProviders) {
-		provider.clear(column);
-	}
-}
+		public Pair<Indexable, Persistable> getFirst<T, U>(T model, U index)
+		{
+			Pair<Indexable, Persistable> latest = null;
+			foreach (PersistenceProvider provider in persistenceProviders)
+			{
+				if (latest == null)
+				{
+					latest = provider.first(model, index);
+				}
+			}
+			return latest;
+		}
 
-public void clearMetadata(Class<?> column)
-{
-        foreach(PersistenceProvider provider in persistenceProviders) {
-		provider.clearMetadata(column);
-	}
-}
+		public void clearColumn<T>(T column)
+		{
+			foreach (PersistenceProvider provider in persistenceProviders)
+			{
+				provider.clear(column);
+			}
+		}
 
-    /*
-    public boolean merge(Persistable model, Indexable index) throws Exception {
-        boolean exists = false;
-        for(PersistenceProvider provider: persistenceProviders) {
-            if(exists) {
-                provider.save(model, index);
-            } else {
-                exists = provider.merge(model, index);
-            }
-        }
-        return exists;
-    }
-    */
+		public void clearMetadata<T>(T column)
+		{
+			foreach (PersistenceProvider provider in persistenceProviders)
+			{
+				provider.clearMetadata(column);
+			}
+		}
+
+		/*
+		public bool merge(Persistable model, Indexable index)
+		{
+			bool exists = false;
+			foreach(PersistenceProvider provider in persistenceProviders)
+			{
+				if(exists)
+				{
+					provider.save(model, index);
+				}
+				else
+				{
+					exists = provider.merge(model, index);
+				}
+			}
+			return exists;
+		}
+		*/
+
+	}
 }
 

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using IotaNet.Iri.Utils;
 
 namespace IotaNet.Iri.Storage
 {
@@ -11,39 +10,40 @@ namespace IotaNet.Iri.Storage
 	 */
 	public interface PersistenceProvider
 	{
-
 		void init();
 		bool isAvailable();
 		void shutdown();
-		boolean save(Persistable model, Indexable index);
-		void delete(Class<?> model, Indexable index);
+		bool save(Persistable model, Indexable index);
+		void delete<T>(T model, Indexable index);
 
-		boolean update(Persistable model, Indexable index, String item);
+		bool update(Persistable model, Indexable index, String item);
 
-		boolean exists(Class<?> model, Indexable key);
+		bool exists<T>(T model, Indexable key);
 
-		Pair<Indexable, Persistable> latest(Class<?> model, Class<?> indexModel);
+		Pair<Indexable, Persistable> latest<T,U>(T model, U indexModel);
 
-		Set<Indexable> keysWithMissingReferences(Class<?> modelClass, Class<?> otherClass);
+		HashSet<Indexable> keysWithMissingReferences<T,U>(T modelClass, U otherClass);
 
-		Persistable get(Class<?> model, Indexable index);
+		Persistable get<T>(T model, Indexable index);
 
-		boolean mayExist(Class<?> model, Indexable index);
+		bool mayExist<T>(T model, Indexable index);
 
-		long count(Class<?> model);
+		long count<T>(T model);
 
-		Set<Indexable> keysStartingWith(Class<?> modelClass, byte[] value);
+		HashSet<Indexable> keysStartingWith<T>(T modelClass, byte[] value);
 
-		Persistable seek(Class<?> model, byte[] key);
+		Persistable seek<T>(T model, byte[] key);
 
-		Pair<Indexable, Persistable> next(Class<?> model, Indexable index);
-		Pair<Indexable, Persistable> previous(Class<?> model, Indexable index);
+		Pair<Indexable, Persistable> next<T>(T model, Indexable index);
+		Pair<Indexable, Persistable> previous<T>(T model, Indexable index);
 
-		Pair<Indexable, Persistable> first(Class<?> model, Class<?> indexModel);
+		Pair<Indexable, Persistable> first<T,U>(T model, U indexModel);
 
-		boolean saveBatch(List<Pair<Indexable, Persistable>> models);
+		bool saveBatch(List<Pair<Indexable, Persistable>> models);
 
-		void clear(Class<?> column);
-		void clearMetadata(Class<?> column);
+		void clear<T>(T column);
+		void clearMetadata<T>(T column);
+
+		//bool merge(Persistable model, Indexable index);
 	}
 }
