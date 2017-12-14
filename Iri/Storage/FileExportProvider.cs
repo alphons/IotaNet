@@ -7,6 +7,8 @@ using IotaNet.Iri.Utils;
 using System.IO;
 using System.Text;
 
+using IotaNet.Iri.Controllers;
+
 namespace IotaNet.Iri.Storage
 {
 	/**
@@ -92,7 +94,7 @@ namespace IotaNet.Iri.Storage
 		}
 
 
-		public Pair<Indexable, Persistable> latest<T, U>(T model, U indexModel)
+		public Pair<Indexable, Persistable> latest<T, U>()
 		{
 			return null;
 		}
@@ -195,7 +197,7 @@ namespace IotaNet.Iri.Storage
 
 		int[] trits(Transaction transaction)
 		{
-			int[] _trits = new int[TRINARY_SIZE];
+			int[] _trits = new int[TransactionViewModel.TRINARY_SIZE];
 			if (transaction._bytes != null)
 			{
 				Converter.getTrits(transaction._bytes, _trits);

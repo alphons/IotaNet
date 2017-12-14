@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using IotaNet.Iri.Helpers;
 
-namespace IotaNet.Iri.Hash
+namespace IotaNet.Iri.Hashing
 {
 	/**
 	 * (c) 2016 Come-from-Beyond

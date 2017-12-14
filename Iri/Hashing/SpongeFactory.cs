@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IotaNet.Iri.Hash
+namespace IotaNet.Iri.Hashing
 {
 	public abstract class SpongeFactory
 	{

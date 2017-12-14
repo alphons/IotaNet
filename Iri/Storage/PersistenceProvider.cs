@@ -20,9 +20,9 @@ namespace IotaNet.Iri.Storage
 
 		bool exists<T>(T model, Indexable key);
 
-		Pair<Indexable, Persistable> latest<T,U>(T model, U indexModel);
+		Pair<Indexable, Persistable> latest<T, U>();
 
-		HashSet<Indexable> keysWithMissingReferences<T,U>(T modelClass, U otherClass);
+		HashSet<Indexable> keysWithMissingReferences<T,U>();
 
 		Persistable get<T>(T model, Indexable index);
 
@@ -37,7 +37,7 @@ namespace IotaNet.Iri.Storage
 		Pair<Indexable, Persistable> next<T>(T model, Indexable index);
 		Pair<Indexable, Persistable> previous<T>(T model, Indexable index);
 
-		Pair<Indexable, Persistable> first<T,U>(T model, U indexModel);
+		Pair<Indexable, Persistable> first<T,U>();
 
 		bool saveBatch(List<Pair<Indexable, Persistable>> models);
 

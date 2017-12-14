@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Org.BouncyCastle.Crypto.Digests;
 using IotaNet.Iri.Helpers;
 
-namespace IotaNet.Iri.Hash
+namespace IotaNet.Iri.Hashing
 {
 	public class Kerl : ISponge
 	{

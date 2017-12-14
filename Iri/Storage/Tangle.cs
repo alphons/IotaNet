@@ -91,14 +91,14 @@ namespace IotaNet.Iri.Storage
 			}
 		}
 
-		public Pair<Indexable, Persistable> getLatest<T, U>(T model, U index)
+		public Pair<Indexable, Persistable> getLatest<T, U>()//(T model, U index)
 		{
 			Pair<Indexable, Persistable> latest = null;
 			foreach (PersistenceProvider provider in persistenceProviders)
 			{
 				if (latest == null)
 				{
-					latest = provider.latest(model, index);
+					latest = provider.latest<T,U>();
 				}
 			}
 			return latest;
@@ -220,14 +220,14 @@ namespace IotaNet.Iri.Storage
 			return latest;
 		}
 
-		public Pair<Indexable, Persistable> getFirst<T, U>(T model, U index)
+		public Pair<Indexable, Persistable> getFirst<T, U>()
 		{
 			Pair<Indexable, Persistable> latest = null;
 			foreach (PersistenceProvider provider in persistenceProviders)
 			{
 				if (latest == null)
 				{
-					latest = provider.first(model, index);
+					latest = provider.first<T,U>();
 				}
 			}
 			return latest;

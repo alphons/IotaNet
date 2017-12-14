@@ -45,18 +45,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BundleValidator.cs" />
     <Compile Include="Conf\Configuration.cs" />
     <Compile Include="Controllers\TransactionViewModel.cs" />
-    <Compile Include="Hash\Curl.cs" />
-    <Compile Include="Hash\ISS.cs" />
-    <Compile Include="Hash\Kerl.cs" />
-    <Compile Include="Hash\PearlDiver.cs" />
-    <Compile Include="Hash\Sponge.cs" />
-    <Compile Include="Hash\SpongeFactory.cs" />
+    <Compile Include="Hashing\Curl.cs" />
+    <Compile Include="Hashing\ISS.cs" />
+    <Compile Include="Hashing\Kerl.cs" />
+    <Compile Include="Hashing\PearlDiver.cs" />
+    <Compile Include="Hashing\Sponge.cs" />
+    <Compile Include="Hashing\SpongeFactory.cs" />
     <Compile Include="Helpers\Arrays.cs" />
     <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Helpers\Ini.cs" />
     <Compile Include="Helpers\LoggerFactory.cs" />
+    <Compile Include="Iota.cs" />
     <Compile Include="IRI.cs" />
     <Compile Include="Model\Address.cs" />
     <Compile Include="Model\Approvee.cs" />
@@ -77,7 +79,9 @@
     <Compile Include="Storage\Indexable.cs" />
     <Compile Include="Storage\Persistable.cs" />
     <Compile Include="Storage\PersistenceProvider.cs" />
+    <Compile Include="Storage\rocksDB\RocksDBPersistenceProvider.cs" />
     <Compile Include="Storage\Tangle.cs" />
+    <Compile Include="Storage\ZmqPublishProvider.cs" />
     <Compile Include="Utils\Converter.cs" />
     <Compile Include="Helpers\Credential.cs" />
     <Compile Include="Helpers\IAcount.cs" />

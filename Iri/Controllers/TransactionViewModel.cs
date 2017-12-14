@@ -44,7 +44,7 @@ namespace IotaNet.Iri.Controllers
 		private ApproveeViewModel approovers;
 		private TransactionViewModel trunk;
 		private TransactionViewModel branch;
-		private Model.Hash hash;
+		private Hash hash;
 
 
 		public static int GROUP = 0; // transactions GROUP means that's it's a non-leaf node (leafs store transaction value)
@@ -107,7 +107,7 @@ namespace IotaNet.Iri.Controllers
 		}
 
 
-		public TransactionViewModel(byte[] bytes, Model.Hash hash)
+		public TransactionViewModel(byte[] bytes, Hash hash)
 		{
 			transaction = new Transaction();
 			transaction._bytes = new byte[SIZE];
@@ -197,7 +197,7 @@ namespace IotaNet.Iri.Controllers
 			hashesList.addAll(getMetadataSaveBatch());
 
 			getBytes();
-			hashesList.Add(new Pair<Model.Hash, Transaction>(hash, transaction));
+			hashesList.Add(new Pair<Hash, Transaction>(hash, transaction));
 			return hashesList;
 		}
 
@@ -224,17 +224,17 @@ namespace IotaNet.Iri.Controllers
 
 		public bool store(Tangle tangle)
 		{
-	if (hash.Equals(Hash.NULL_HASH) || exists(tangle, hash))
-	{
-		return false;
-	}
+			if (hash.Equals(Hash.NULL_HASH) || exists(tangle, hash))
+			{
+				return false;
+			}
 
-	List<Pair<Indexable, Persistable>> batch = getSaveBatch();
-	if (exists(tangle, hash))
-	{
-		return false;
-	}
-	return tangle.saveBatch(batch);
+			List<Pair<Indexable, Persistable>> batch = getSaveBatch();
+			if (exists(tangle, hash))
+			{
+				return false;
+			}
+			return tangle.saveBatch(batch);
 		}
 
 public ApproveeViewModel getApprovers(Tangle tangle)

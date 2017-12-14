@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace IotaNet.Iri.Hash
+namespace IotaNet.Iri.Hashing
 {
 	/**
 	 * (c) 2016 Come-from-Beyond
