@@ -56,7 +56,7 @@ namespace IotaNet.Iri.Controllers
 
 		public static void fillMetadata(Tangle tangle, TransactionViewModel transactionViewModel)
 		{
-			if (transactionViewModel.getHash().equals(Hash.NULL_HASH)) { return; }
+			if (transactionViewModel.getHash().equals(Model.Hash.NULL_HASH)) { return; }
 			if (transactionViewModel.getType() == FILLED_SLOT && !transactionViewModel.transaction.parsed)
 			{
 				tangle.saveBatch(transactionViewModel.getMetadataSaveBatch());
@@ -86,17 +86,17 @@ namespace IotaNet.Iri.Controllers
 
 		public TransactionViewModel(Transaction transaction, Model.Hash hash)
 		{
-			this.transaction = transaction == null || transaction.bytes == null ? new Transaction() : transaction;
+			this.transaction = transaction == null || transaction._bytes == null ? new Transaction() : transaction;
 			this.hash = hash == null ? Model.Hash.NULL_HASH : hash;
 			weightMagnitude = this.hash.trailingZeros();
 		}
 
-		public TransactionViewModel(int[] trits, Hash hash)
+		public TransactionViewModel(int[] trits, Model.Hash hash)
 		{
-			transaction = new com.iota.iri.model.Transaction();
-			this.trits = new int[trits.length];
-			System.arraycopy(trits, 0, this.trits, 0, trits.length);
-			transaction.bytes = Converter.bytes(trits);
+			transaction = new Transaction();
+			this.trits = new int[trits.Length];
+			Array.Copy(trits, 0, this.trits, 0, trits.Length);
+			transaction._bytes = Converter.bytes(trits);
 			this.hash = hash;
 
 			transaction.type = FILLED_SLOT;
@@ -107,11 +107,11 @@ namespace IotaNet.Iri.Controllers
 		}
 
 
-		public TransactionViewModel(byte[] bytes, Hash hash)
+		public TransactionViewModel(byte[] bytes, Model.Hash hash)
 		{
 			transaction = new Transaction();
-			transaction.bytes = new byte[SIZE];
-			System.arraycopy(bytes, 0, transaction.bytes, 0, SIZE);
+			transaction._bytes = new byte[SIZE];
+			Array.Copy(bytes, 0, transaction._bytes, 0, SIZE);
 
 			this.hash = hash;
 
@@ -123,125 +123,130 @@ namespace IotaNet.Iri.Controllers
 
 		public static int getNumberOfStoredTransactions(Tangle tangle)
 		{
-			return tangle.getCount(Transaction.class).intValue();
+			return (int)tangle.getCount(new Transaction());
 		}
 
-	public bool update(Tangle tangle, String item)
-	{
-		getAddressHash();
-		getTrunkTransactionHash();
-		getBranchTransactionHash();
-		getBundleHash();
-		getTagValue();
-		if (hash.equals(Hash.NULL_HASH)) {
-			return false;
+		public bool update(Tangle tangle, String item)
+		{
+			getAddressHash();
+			getTrunkTransactionHash();
+			getBranchTransactionHash();
+			getBundleHash();
+			getTagValue();
+			if (hash.Equals(Model.Hash.NULL_HASH)) {
+				return false;
+			}
+			return tangle.update(transaction, hash, item);
 		}
-		return tangle.update(transaction, hash, item);
-	}
 
-	public TransactionViewModel getBranchTransaction(Tangle tangle)
-	{
-		if (branch == null) {
-			branch = TransactionViewModel.fromHash(tangle, getBranchTransactionHash());
+		public TransactionViewModel getBranchTransaction(Tangle tangle)
+		{
+			if (branch == null) {
+				branch = TransactionViewModel.fromHash(tangle, getBranchTransactionHash());
+			}
+			return branch;
 		}
-		return branch;
-	}
 
-	public TransactionViewModel getTrunkTransaction(Tangle tangle)
-	{
-		if (trunk == null) {
-			trunk = TransactionViewModel.fromHash(tangle, getTrunkTransactionHash());
+		public TransactionViewModel getTrunkTransaction(Tangle tangle)
+		{
+			if (trunk == null) {
+				trunk = TransactionViewModel.fromHash(tangle, getTrunkTransactionHash());
+			}
+			return trunk;
 		}
-		return trunk;
-	}
 
-public static int[] trits(byte[] transactionBytes)
-{
-	int[] trits;
-	trits = new int[TRINARY_SIZE];
-	if (transactionBytes != null)
+		public static int[] Trits(byte[] transactionBytes)
+		{
+			int[] trits;
+			trits = new int[TRINARY_SIZE];
+			if (transactionBytes != null)
+			{
+				Converter.getTrits(transactionBytes, trits);
+			}
+			return trits;
+		}
+
+		public int[] Trits()
+		{
+			return (trits == null) ? (trits = Trits(transaction._bytes)) : trits;
+		}
+
+		public void delete(Tangle tangle)
+		{
+			tangle.delete(new Transaction(), hash);
+		}
+
+		public List<Pair<Indexable, Persistable>> getMetadataSaveBatch()
+		{
+			List<Pair<Indexable, Persistable>> hashesList = new List<Pair<Indexable, Persistable>>();
+			hashesList.add(new Pair<>(getAddressHash(), new Address(hash)));
+			hashesList.add(new Pair<>(getBundleHash(), new Bundle(hash)));
+			hashesList.add(new Pair<>(getBranchTransactionHash(), new Approvee(hash)));
+			hashesList.add(new Pair<>(getTrunkTransactionHash(), new Approvee(hash)));
+			hashesList.add(new Pair<>(getObsoleteTagValue(), new Tag(hash)));
+
+			setAttachmentData();
+
+			setMetadata();
+			return hashesList;
+		}
+
+		public List<Pair<Indexable, Persistable>> getSaveBatch()
+		{
+			List<Pair<Indexable, Persistable>> hashesList = new List<Pair<Indexable, Persistable>>();
+			hashesList.addAll(getMetadataSaveBatch());
+
+			getBytes();
+			hashesList.Add(new Pair<Model.Hash, Transaction>(hash, transaction));
+			return hashesList;
+		}
+
+
+		public static TransactionViewModel first(Tangle tangle)
+		{
+			Pair<Indexable, Persistable> transactionPair = tangle.getFirst(Transaction.class, Hash.class);
+			if(transactionPair != null && transactionPair.hi != null) 
+			{
+		        return new TransactionViewModel((Transaction) transactionPair.hi, (Hash) transactionPair.low);
+			}
+			return null;
+		}
+
+		public TransactionViewModel next(Tangle tangle) 
+		{
+			Pair<Indexable, Persistable> transactionPair = tangle.next(new Transaction(), hash);
+			if(transactionPair != null && transactionPair.hi != null)
+			{
+				return new TransactionViewModel((Transaction) transactionPair.hi, (Hash) transactionPair.low);
+			}
+			return null;
+		}
+
+		public bool store(Tangle tangle)
+		{
+	if (hash.Equals(Hash.NULL_HASH) || exists(tangle, hash))
 	{
-		Converter.getTrits(transactionBytes, trits);
-	}
-	return trits;
-}
-
-public int[] trits()
-{
-	return (trits == null) ? (trits = trits(transaction.bytes)) : trits;
-}
-
-public void delete(Tangle tangle) throws Exception
-{
-	tangle.delete(Transaction.class, hash);
-    }
-
-    public List<Pair<Indexable, Persistable>> getMetadataSaveBatch() 
-{
-	List<Pair<Indexable, Persistable>> hashesList = new ArrayList<>();
-        hashesList.add(new Pair<>(getAddressHash(), new Address(hash)));
-        hashesList.add(new Pair<>(getBundleHash(), new Bundle(hash)));
-        hashesList.add(new Pair<>(getBranchTransactionHash(), new Approvee(hash)));
-        hashesList.add(new Pair<>(getTrunkTransactionHash(), new Approvee(hash)));
-        hashesList.add(new Pair<>(getObsoleteTagValue(), new Tag(hash)));
-
-		setAttachmentData();
-
-		setMetadata();
-        return hashesList;
-    }
-
-    public List<Pair<Indexable, Persistable>> getSaveBatch() throws Exception
-{
-	List<Pair<Indexable, Persistable>> hashesList = new ArrayList<>();
-        hashesList.addAll(getMetadataSaveBatch());
-
-		getBytes();
-hashesList.add(new Pair<>(hash, transaction));
-        return hashesList;
-    }
-
-
-    public static TransactionViewModel first(Tangle tangle) throws Exception
-{
-	Pair<Indexable, Persistable> transactionPair = tangle.getFirst(Transaction.class, Hash.class);
-        if(transactionPair != null && transactionPair.hi != null) {
-            return new TransactionViewModel((Transaction) transactionPair.hi, (Hash) transactionPair.low);
-        }
-        return null;
-    }
-
-    public TransactionViewModel next(Tangle tangle) throws Exception
-{
-	Pair<Indexable, Persistable> transactionPair = tangle.next(Transaction.class, hash);
-        if(transactionPair != null && transactionPair.hi != null) {
-            return new TransactionViewModel((Transaction) transactionPair.hi, (Hash) transactionPair.low);
-        }
-        return null;
-    }
-
-    public boolean store(Tangle tangle) throws Exception
-{
-        if (hash.equals(Hash.NULL_HASH) || exists(tangle, hash)) {
 		return false;
 	}
 
 	List<Pair<Indexable, Persistable>> batch = getSaveBatch();
-        if (exists(tangle, hash)) {
+	if (exists(tangle, hash))
+	{
 		return false;
 	}
-        return tangle.saveBatch(batch);
-}
+	return tangle.saveBatch(batch);
+		}
 
-public ApproveeViewModel getApprovers(Tangle tangle) throws Exception
+public ApproveeViewModel getApprovers(Tangle tangle)
 {
-        if(approovers == null) {
-		approovers = ApproveeViewModel.load(tangle, hash);
+        if(approovers == null)
+		{
+			approovers = ApproveeViewModel.load(tangle, hash);
+		}
+			return approovers;
 	}
-        return approovers;
-}
 
-public  int getType()
+public int getType()
 {
 	return transaction.type;
 }
@@ -258,7 +263,7 @@ public long getArrivalTime()
 
 public byte[] getBytes()
 {
-	if (transaction.bytes == null || transaction.bytes.length != SIZE)
+	if (transaction.bytes == null || transaction.bytes.Length != SIZE)
 	{
 		transaction.bytes = trits == null ? new byte[SIZE] : Converter.bytes(trits());
 	}
@@ -270,7 +275,7 @@ public Hash getHash()
 	return hash;
 }
 
-public AddressViewModel getAddress(Tangle tangle) throws Exception
+public AddressViewModel getAddress(Tangle tangle)
 {
         if(address == null) {
 		address = AddressViewModel.load(tangle, getAddressHash());
@@ -278,7 +283,7 @@ public AddressViewModel getAddress(Tangle tangle) throws Exception
         return address;
 }
 
-public TagViewModel getTag(Tangle tangle) throws Exception
+public TagViewModel getTag(Tangle tangle)
 {
         return TagViewModel.load(tangle, getTagValue());
 }
@@ -353,7 +358,7 @@ public long value()
 	return transaction.value;
 }
 
-public void setValidity( Tangle tangle, int validity) throws Exception
+public void setValidity( Tangle tangle, int validity)
 {
 	transaction.validity = validity;
 	update(tangle, "validity");
@@ -407,17 +412,17 @@ public void setMetadata()
 	transaction.type = transaction.bytes == null ? TransactionViewModel.PREFILLED_SLOT : TransactionViewModel.FILLED_SLOT;
 }
 
-public static boolean exists(Tangle tangle, Hash hash) 
-{
-        return tangle.exists(Transaction.class, hash);
+public static bool exists(Tangle tangle, Hash hash) 
+	{
+        return tangle.exists(new Transaction(), hash);
     }
 
-    public static Set<Indexable> getMissingTransactions(Tangle tangle) 
-{
-        return tangle.keysWithMissingReferences(Approvee.class, Transaction.class);
+    public static HashSet<Indexable> getMissingTransactions(Tangle tangle) 
+	{
+        return tangle.keysWithMissingReferences(new Approvee(), new Transaction());
     }
 
-    public static void updateSolidTransactions(Tangle tangle, Set<Hash> analyzedHashes)
+    public static void updateSolidTransactions(Tangle tangle, HashSet<Hash> analyzedHashes)
 {
 	Iterator<Hash> hashIterator = analyzedHashes.iterator();
 	TransactionViewModel transactionViewModel;
@@ -429,7 +434,7 @@ public static boolean exists(Tangle tangle, Hash hash)
 	}
 }
 
-public boolean updateSolid(boolean solid) 
+public bool updateSolid(boolean solid) 
 {
         if(solid != transaction.solid) {
 		transaction.solid = solid;
@@ -438,7 +443,7 @@ public boolean updateSolid(boolean solid)
         return false;
 }
 
-public boolean isSolid()
+public bool isSolid()
 {
 	return transaction.solid;
 }
@@ -491,7 +496,7 @@ public void updateHeights( Tangle tangle)
         }
     }
 
-    public void updateSender(String sender) throws Exception
+    public void updateSender(String sender)
 {
 	transaction.sender = sender;
 }
@@ -501,3 +506,4 @@ public String getSender()
 }
 }
 }
+

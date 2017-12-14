@@ -7,7 +7,7 @@ using IotaNet.Iri.Storage;
 
 namespace IotaNet.Iri.Model
 {
-	public class Hash
+	public class Hash : Indexable
 	{
 		public static int SIZE_IN_TRITS = 243;
 		public static int SIZE_IN_BYTES = 49;
@@ -150,7 +150,7 @@ namespace IotaNet.Iri.Model
 			return null;
 		}
 
-		public int compareTo(Indexable indexable)
+		public int CompareTo(Indexable indexable)
 		{
 			Hash hash = new Hash(indexable.bytes());
 			if (this.Equals(hash))

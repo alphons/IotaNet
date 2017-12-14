@@ -196,9 +196,9 @@ namespace IotaNet.Iri.Storage
 		int[] trits(Transaction transaction)
 		{
 			int[] _trits = new int[TRINARY_SIZE];
-			if (transaction.bytes != null)
+			if (transaction._bytes != null)
 			{
-				Converter.getTrits(transaction.bytes, _trits);
+				Converter.getTrits(transaction._bytes, _trits);
 			}
 			return _trits;
 		}

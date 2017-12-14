@@ -17,7 +17,7 @@ namespace IotaNet.Iri.Model
 
 		public static int SIZE = 1604;
 
-		public byte[] bytes;
+		public byte[] _bytes;
 
 		public Hash address;
 		public Hash bundle;
@@ -45,17 +45,17 @@ namespace IotaNet.Iri.Model
 		public String sender = "";
 		public int snapshot;
 
-		public byte[] Bytes()
+		public byte[] bytes()
 		{
-			return bytes;
+			return _bytes;
 		}
 
 		public void read(byte[] bytes)
 		{
 			if (bytes != null)
 			{
-				this.bytes = new byte[SIZE];
-				Array.Copy(bytes, 0, this.bytes, 0, SIZE);
+				this._bytes = new byte[SIZE];
+				Array.Copy(bytes, 0, this._bytes, 0, SIZE);
 				this.type = TransactionViewModel.FILLED_SLOT;
 			}
 		}

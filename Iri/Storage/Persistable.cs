@@ -11,7 +11,7 @@ namespace IotaNet.Iri.Storage
 	 */
 	public interface Persistable
 	{
-		byte[] Bytes();
+		byte[] bytes();
 		void read(byte[] bytes);
 		byte[] metadata();
 		void readMetadata(byte[] bytes);
