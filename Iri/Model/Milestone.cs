@@ -1,10 +1,8 @@
-﻿using IotaNet.Iri.Storage;
-using IotaNet.Iri.Utils;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using IotaNet.Iri.Storage;
+using IotaNet.Iri.Utils;
 
 namespace IotaNet.Iri.Model
 {

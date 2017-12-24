@@ -14,7 +14,7 @@ namespace IotaNet.Iri.Storage
 		bool isAvailable();
 		void shutdown();
 		bool save(Persistable model, Indexable index);
-		void delete<T>(T model, Indexable index);
+		void delete<T>(Indexable index);
 
 		bool update(Persistable model, Indexable index, String item);
 
@@ -24,18 +24,18 @@ namespace IotaNet.Iri.Storage
 
 		HashSet<Indexable> keysWithMissingReferences<T,U>();
 
-		Persistable get<T>(T model, Indexable index);
+		Persistable get<T>(Indexable index);
 
-		bool mayExist<T>(T model, Indexable index);
+		bool mayExist<T>(Indexable index);
 
 		long count<T>(T model);
 
 		HashSet<Indexable> keysStartingWith<T>(T modelClass, byte[] value);
 
-		Persistable seek<T>(T model, byte[] key);
+		Persistable seek<T>(byte[] key);
 
-		Pair<Indexable, Persistable> next<T>(T model, Indexable index);
-		Pair<Indexable, Persistable> previous<T>(T model, Indexable index);
+		Pair<Indexable, Persistable> next<T>(Indexable index);
+		Pair<Indexable, Persistable> previous<T>(Indexable index);
 
 		Pair<Indexable, Persistable> first<T,U>();
 

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IotaNet.Iri.Model
 {
@@ -12,10 +8,10 @@ namespace IotaNet.Iri.Model
 	public class Address : Hashes
 	{
 
-	public Address() { }
-	public Address(Hash hash)
-	{
-		set.add(hash);
+		public Address() { }
+		public Address(Hash hash)
+		{
+			set.Add(hash);
+		}
 	}
-}
 }

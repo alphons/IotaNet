@@ -37,12 +37,12 @@ namespace IotaNet.Iri.Storage
 			this.persistenceProviders.Clear();
 		}
 
-		public Persistable load<T>(T model, Indexable index)
+		public Persistable load<T>(Indexable index)
 		{
 			Persistable Out = null;
 			foreach (PersistenceProvider provider in this.persistenceProviders)
 			{
-				if ((Out = provider.get(model, index)) != null)
+				if ((Out = provider.get<T>(index)) != null)
 				{
 					break;
 				}
@@ -83,11 +83,11 @@ namespace IotaNet.Iri.Storage
 			return exists;
 		}
 
-		public void delete<T>(T model, Indexable index)
+		public void delete<T>(Indexable index)
 		{
 			foreach (PersistenceProvider provider in persistenceProviders)
 			{
-				provider.delete(model, index);
+				provider.delete<T>(index);
 			}
 		}
 
@@ -159,11 +159,11 @@ namespace IotaNet.Iri.Storage
 			return false;
 		}
 
-		public Boolean maybeHas<T>(T model, Indexable index)
+		public Boolean maybeHas<T>(Indexable index)
 		{
 			foreach (PersistenceProvider provider in this.persistenceProviders)
 			{
-				if (provider.mayExist(model, index)) return true;
+				if (provider.mayExist<T>(index)) return true;
 			}
 			return false;
 		}
@@ -181,12 +181,12 @@ namespace IotaNet.Iri.Storage
 			return value;
 		}
 
-		public Persistable find<T>(T model, byte[] key)
+		public Persistable find<T>(byte[] key)
 		{
 			Persistable Out = null;
 			foreach (PersistenceProvider provider in this.persistenceProviders)
 			{
-				if ((Out = provider.seek(model, key)) != null)
+				if ((Out = provider.seek<T>(key)) != null)
 				{
 					break;
 				}
@@ -194,27 +194,27 @@ namespace IotaNet.Iri.Storage
 			return Out;
 		}
 
-		public Pair<Indexable, Persistable> next<T>(T model, Indexable index)
+		public Pair<Indexable, Persistable> next<T>(Indexable index)
 		{
 			Pair<Indexable, Persistable> latest = null;
 			foreach (PersistenceProvider provider in persistenceProviders)
 			{
 				if (latest == null)
 				{
-					latest = provider.next(model, index);
+					latest = provider.next<T>(index);
 				}
 			}
 			return latest;
 		}
 
-		public Pair<Indexable, Persistable> previous<T>(T model, Indexable index)
+		public Pair<Indexable, Persistable> previous<T>(Indexable index)
 		{
 			Pair<Indexable, Persistable> latest = null;
 			foreach (PersistenceProvider provider in persistenceProviders)
 			{
 				if (latest == null)
 				{
-					latest = provider.previous(model, index);
+					latest = provider.previous<T>(index);
 				}
 			}
 			return latest;
